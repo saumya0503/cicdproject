@@ -6,10 +6,12 @@ pipeline {
     }
 
     stages {
-        stage('Clone') {
-            steps {
-                git 'cicdproject'
-            }
+       stage('Clone') {
+  steps {
+    git url: 'https://github.com/saumya0503/cicdproject.git', branch: 'master'
+  }
+}
+
         }
 
         stage('Install Dependencies') {
@@ -32,7 +34,7 @@ pipeline {
 
         stage('Push to DockerHub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'saumya0503', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
                     sh "docker push $IMAGE"
                 }
@@ -41,8 +43,8 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f k8s/deployment.yaml'
-                sh 'kubectl apply -f k8s/service.yaml'
+                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl apply -f service.yaml'
             }
         }
     }
