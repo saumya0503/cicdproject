@@ -6,14 +6,6 @@ pipeline {
     }
 
     stages {
-       stage('Clone') {
-  steps {
-    git url: 'https://github.com/saumya0503/cicdproject.git', branch: 'master'
-  }
-}
-
-        }
-
         stage('Install Dependencies') {
             steps {
                 sh 'npm install'
