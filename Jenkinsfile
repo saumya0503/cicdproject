@@ -21,16 +21,22 @@ pipeline {
             }
         }
 
-        stage('Push to DockerHub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'saumya0503', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat """
-                    docker login -u %DOCKER_USER% -p %DOCKER_PASS%
-                    docker push %DOCKER_IMAGE%:%DOCKER_TAG%
-                    """
-                }
-            }
+      stage('Push to DockerHub') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'saumya0503',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASS')]) {
+
+            bat '''
+            echo Logging into DockerHub...
+            echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+            docker push saumya0503/cicdproject:latest
+            '''
         }
+    }
+}
+
 
         stage('Deploy to Kubernetes') {
             steps {
