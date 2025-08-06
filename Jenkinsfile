@@ -2,41 +2,44 @@ pipeline {
     agent any
 
     environment {
-        IMAGE = 'saumya0503/cicdproject:latest'
+        DOCKER_IMAGE = "saumya0503/cicdproject"
+        DOCKER_TAG = "latest"
     }
 
     stages {
         stage('Install Dependencies') {
             steps {
-                sh 'npm install'
+                bat 'npm install'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                sh "docker build -t $IMAGE ."
+                bat "docker build -t %DOCKER_IMAGE%:%DOCKER_TAG% ."
             }
         }
 
         stage('Push to DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'saumya0503', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                    sh "docker push $IMAGE"
+                    bat """
+                    docker login -u %DOCKER_USER% -p %DOCKER_PASS%
+                    docker push %DOCKER_IMAGE%:%DOCKER_TAG%
+                    """
                 }
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f deployment.yaml'
-                sh 'kubectl apply -f service.yaml'
+                bat 'kubectl apply -f deployment.yaml'
+                bat 'kubectl apply -f service.yaml'
             }
         }
     }
