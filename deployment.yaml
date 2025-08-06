@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cicdproject
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: cicdproject
+  template:
+    metadata:
+      labels:
+        app: cicdproject
+    spec:
+      containers:
+      - name: cicdproject
+        image: saumya0503/cicdproject:latest
+        ports:
+        - containerPort: 9000
